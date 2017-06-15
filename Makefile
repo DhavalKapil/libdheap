@@ -3,7 +3,6 @@ TEST_DIR = ./test
 BUILD_DIR = ./build
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
-SRC_FILES = libdheap.c
 SHARED_LIB = libdheap.so
 
 CC = gcc
@@ -15,7 +14,7 @@ all: library test
 
 library:
 	$(dir_guard)
-	$(CC) $(CFLAGS) $(SRC_DIR)/$(SRC_FILES) -o $(BUILD_DIR)/${SHARED_LIB}
+	$(CC) $(CFLAGS) $(SRC_DIR)/*.c -o $(BUILD_DIR)/${SHARED_LIB}
 
 test: library
 	$(dir_guard)

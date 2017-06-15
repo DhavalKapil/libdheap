@@ -1,6 +1,7 @@
 #define _GNU_SOURCE
 
 #include "libdheap.h"
+#include "backtrace.h"
 
 #include <stdio.h>
 #include <dlfcn.h>
