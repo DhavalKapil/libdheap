@@ -13,3 +13,6 @@ A shared library that detects memory corruption in heaps dynamically.
 
 ## Usage:
 
+## Implementation
+
+* Uses a custom stack tracer (by jumping around the memory using the frame pointer). Existing stack tracers don't work as they are themselves dependent upon 'malloc', 'free', etc.
