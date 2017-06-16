@@ -252,7 +252,6 @@ struct node *find_node (chunks_storage *chunks, void *ptr) {
   return find_node_in_tree (chunks->root, ptr);
 }
 
-
 int check_overlap (chunks_storage *chunks, struct chunk *ch) {
   if (chunks->root == NULL) {
     return 0;

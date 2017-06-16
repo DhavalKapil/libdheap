@@ -8,13 +8,26 @@
 #ifndef _CHUNK_GUARD_H
 #define _CHUNK_GUARD_H
 
+// Forward declaring chunk for canary
+struct chunk;
+
+#include "canary.h"
+
 #include <stddef.h>
 
-// The chunk representation
+/**
+ * The chunk representation
+ * The ptr here points to the begining of the chunk (size in malloc_chunk)
+ * Canary is put after requested_size instead of allocated_size to detect
+ * more errors. The size of the chunk requested is automatically adjusted
+ * to add space for the two canaries.
+ */
 struct chunk {
   void *ptr;
   size_t requested_size;
   size_t allocated_size;
+  canary begin_guard;
+  canary end_guard; // At the end of requested size
 };
 
 // The node representation
