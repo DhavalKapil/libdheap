@@ -88,8 +88,6 @@ void *malloc (size_t size) {
   if (!insert_chunk(&chunks, ch)) {
     display_log(libdheap_log,
                 "Couldn't insert in storage, returning NULL");
-    set_backtrace(backtrace, 1, BACKTRACE_LEN);
-    print_backtrace(backtrace, BACKTRACE_LEN);
     libc_free(ptr);
     libc_free(ch);
     pthread_mutex_unlock(&libdheap_mutex);
