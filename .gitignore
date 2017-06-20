@@ -4,5 +4,10 @@
 .*\#*
 
 # Build files
-test
 libdheap.so
+
+# Test files
+test
+buffer_overflow
+buffer_underflow
+double_free

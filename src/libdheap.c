@@ -126,7 +126,7 @@ void free (void *ptr) {
   if (n == NULL) {
     // Freeing invalid chunk
     // Possibly a double free
-    display_log(libdheap_log, "Freeing chunk not present in storage!");
+    display_log(libdheap_log, "Freeing non allocated chunk!");
     set_backtrace(backtrace, 1, BACKTRACE_LEN);
     print_backtrace(backtrace, BACKTRACE_LEN);
     if (is_libdheap_exit_on_error()) {

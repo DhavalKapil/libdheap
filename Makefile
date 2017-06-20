@@ -4,19 +4,35 @@ ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 SHARED_LIB = libdheap.so
 
+TEST_FILES = test buffer_overflow buffer_underflow double_free
+
 CC = gcc
 CFLAGS = -shared -Bsymbolic -Wl,--no-as-needed -ldl -fPIC -Wall -Werror
 
-all: library test
+all: library tests
 
 library:
 	$(CC) $(CFLAGS) $(SRC_DIR)/*.c -o ${SHARED_LIB}
 
-test: library
-	$(CC) -o test $(TEST_DIR)/test.c
+tests: $(TEST_FILES)
 
-runtest: test
-	./test
+%: $(TEST_DIR)/%.c
+	$(CC) -o $@ $<
 
-runctest: test library
-	LD_PRELOAD=$(ROOT_DIR)/${SHARED_LIB} ./test
+runtests: tests
+	for file in $(TEST_FILES); do \
+	  echo $$file; \
+		./$$file; \
+	done
+
+rundtests: tests library
+	for file in $(TEST_FILES); do \
+	  echo $$file; \
+		LD_PRELOAD=$(ROOT_DIR)/${SHARED_LIB} LIBDHEAP_EXIT_ON_CLOSE=1 ./$$file; \
+	done
+
+clean:
+	rm $(SHARED_LIB)
+	for file in $(TEST_FILES); do \
+		rm $$file; \
+	done
