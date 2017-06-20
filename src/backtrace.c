@@ -1,16 +1,19 @@
 #include "backtrace.h"
+#include "display.h"
 
-#include <stdio.h>
 #include <stddef.h>
+
+extern FILE *libdheap_log;
+extern void *__libc_stack_end;
 
 /**
  * Assumes a stack layout where stack frames are linked using frame pointers
  *
- * 	  +-----------------+     +-----------------+
+ *        +-----------------+     +-----------------+
  *  FP -> | previous FP --------> | previous FP ------>
- *	  |                 |     |                 |
- *	  | return address  |     | return address  |
- *	  +-----------------+     +-----------------+
+ *        |                 |     |                 |
+ *        | return address  |     | return address  |
+ *        +-----------------+     +-----------------+
  *
  * Stack is growing upwards, so addresses grow downwards
  * Assuming pointers to the above can be stored in size_t data type
@@ -28,7 +31,10 @@ void set_backtrace (void **backtrace, unsigned int start, unsigned int len) {
 
   current_frame_address = __builtin_frame_address(0);
   for (i = 0; i < (start + len); i++) {
-    if (current_frame_address != NULL) {
+    if (current_frame_address >= (size_t *)&i &&
+      current_frame_address <= (size_t *)__libc_stack_end) {
+      // current_frame_address falls in range of 'i' (lowest possible stack
+      // address) and __libc_stack_end (highest possible stack address)
       current_return_address = (size_t *)*(current_frame_address + 1);
       current_frame_address = (size_t *)*(current_frame_address);
     } else {
@@ -43,12 +49,12 @@ void set_backtrace (void **backtrace, unsigned int start, unsigned int len) {
 
 void print_backtrace (void **backtrace, unsigned int len) {
   unsigned int i;
-  fprintf(stderr, "Printing Stack Trace ====>\n");
+  display_log(libdheap_log, "Printing Stack Trace ====>");
   for (i = 0; i < len; i++) {
     if (backtrace[i] == NULL) {
       break;
     }
-    fprintf(stderr, "\t\t%p\n", backtrace[i]);
+    display_log(libdheap_log, "\t\t%p", backtrace[i]);
   }
-  fprintf(stderr, "<==== End of Stack Trace\n");
+  display_log(libdheap_log, "<==== End of Stack Trace\n");
 }
