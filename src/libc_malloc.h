@@ -1,5 +1,7 @@
 /**
  * This implements an interface for the original memory allocator functions.
+ * Internally, it uses __libc_malloc and __libc_free. 'dylsm' causes issues
+ * because it internally uses calloc.
  */
 
 #ifndef _LIBC_MALLOC_GUARD_H
@@ -7,21 +9,10 @@
 
 #define _GNU_SOURCE
 
-#include <dlfcn.h>
+#include <stddef.h>
 
-// The libc allocator functions
-void *(*_libc_malloc) (size_t);
-void (*_libc_free) (void *);
+void *libc_malloc (size_t size);
 
-/**
- * Constructor function, called when library is loaded
- */
-static void init() __attribute__ ((constructor));
-
-void init() {
-  // Dynamically loading them directly
-  _libc_malloc = dlsym(RTLD_NEXT, "malloc");
-  _libc_free = dlsym(RTLD_NEXT, "free");
-}
+void libc_free (void *ptr);
 
 #endif
