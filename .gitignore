@@ -4,4 +4,5 @@
 .*\#*
 
 # Build files
-build
+test
+libdheap.so
