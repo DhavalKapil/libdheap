@@ -90,10 +90,19 @@ struct node *find_node (chunks_storage *chunks, void *ptr);
  * Checks whether memory area is overlapping with existing chunks or not
  *
  * @param chunks The storage object
- * @param chunk The chunk that needs to be checked for overlap
+ * @param ch The chunk that needs to be checked for overlap
  *
  * @return 1 if it is overlapping
  */
 int check_overlap (chunks_storage *chunks, struct chunk *ch);
+
+/**
+ * Debug function used to print contents of AVL tree in 'in order traversal'
+ * This function is not even used in DEBUG mode. This is only for testing
+ * purposes.
+ *
+ * @param root The root of the tree
+ */
+void print_ptrs (struct node *root);
 
 #endif

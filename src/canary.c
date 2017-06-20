@@ -1,7 +1,10 @@
 #include "canary.h"
+#include "display.h"
 
 #include <fcntl.h>
 #include <unistd.h>
+
+extern FILE *libdheap_log;
 
 /**
  * Returns a pointer to the begin canary of a chunk
@@ -11,7 +14,7 @@
  * @return The canary *
  */
 inline canary *get_begin_canary (struct chunk *ch) {
-  return (canary *)((char *)ch->ptr + sizeof(canary));
+  return (canary *)((char *)ch->ptr + sizeof(size_t));
 }
 
 /**
@@ -23,6 +26,7 @@ inline canary *get_begin_canary (struct chunk *ch) {
  */
 inline canary *get_end_canary (struct chunk *ch) {
   return (canary *)((char *)ch->ptr +
+                    sizeof (size_t) +
                     ch->requested_size -
                     sizeof(canary));
 }
@@ -32,7 +36,6 @@ inline canary *get_end_canary (struct chunk *ch) {
 size_t get_padded_size (size_t size) {
   return (size + 2*sizeof(canary));
 }
-
 
 canary generate_canary () {
   canary c;
@@ -67,8 +70,10 @@ void guard_chunk (struct chunk *ch) {
 
 int check_canary (struct chunk *ch) {
   if (ch->begin_guard != *get_begin_canary(ch)) {
+    display_log(libdheap_log, "Buffer underflow detected in heap chunk");
     return 0;
   } else if (ch->end_guard != *get_end_canary(ch)) {
+    display_log(libdheap_log, "Buffer overflow detected in heap chunk");
     return 0;
   }
   return 1;

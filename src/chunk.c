@@ -1,6 +1,8 @@
 #include "chunk.h"
 #include "libc_malloc.h"
 
+#include <stdio.h>
+
 /**
  * Returns a node structure wrapping a chunk
  *
@@ -9,7 +11,7 @@
  * @return The node structure
  */
 struct node *create_node (struct chunk *ch) {
-  struct node *n = _libc_malloc(sizeof(struct node));
+  struct node *n = libc_malloc(sizeof(struct node));
   if (n == NULL) {
     return NULL;
   }
@@ -160,7 +162,7 @@ struct node *remove_node (struct node *root, struct node *n) {
     // Removing 'root' from its subtree
     left = root->left;
     right = root->right;
-    _libc_free(root);
+    libc_free(root);
 
     if (right == NULL) {
       return left;
@@ -202,9 +204,9 @@ int check_overlap_in_nodes (struct node *root, struct chunk *ch) {
     return 0;
   }
 
-  if ( CHUNK_END(ch) < CHUNK_BEGIN(root->ch) ) {
+  if ( CHUNK_END(ch) <= CHUNK_BEGIN(root->ch) ) {
     return check_overlap_in_nodes(root->left, ch);
-  } else if ( CHUNK_BEGIN(ch) > CHUNK_END(root->ch) ) {
+  } else if ( CHUNK_BEGIN(ch) >= CHUNK_END(root->ch) ) {
     return check_overlap_in_nodes(root->right, ch);
   } else {
     // Chunk ch overlaps with chunk root->ch!!
@@ -258,4 +260,15 @@ int check_overlap (chunks_storage *chunks, struct chunk *ch) {
   }
 
   return check_overlap_in_nodes (chunks->root, ch);
+}
+
+void print_ptrs (struct node *root) {
+  if (root == NULL) {
+    return;
+  }
+  fprintf(stderr, "%p ( ", root->ch->ptr);
+  print_ptrs(root->left);
+  fprintf(stderr, " ) ( ");
+  print_ptrs(root->right);
+  fprintf(stderr, " ) ");
 }
