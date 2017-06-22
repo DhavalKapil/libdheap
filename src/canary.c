@@ -13,7 +13,7 @@ extern FILE *libdheap_log;
  *
  * @return The canary *
  */
-inline canary *get_begin_canary (struct chunk *ch) {
+static inline canary *get_begin_canary (struct chunk *ch) {
   return (canary *)((char *)ch->ptr + sizeof(size_t));
 }
 
@@ -24,7 +24,7 @@ inline canary *get_begin_canary (struct chunk *ch) {
  *
  * @return The canary *
  */
-inline canary *get_end_canary (struct chunk *ch) {
+static inline canary *get_end_canary (struct chunk *ch) {
   return (canary *)((char *)ch->ptr +
                     sizeof (size_t) +
                     ch->requested_size -
