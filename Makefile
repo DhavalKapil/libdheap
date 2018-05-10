@@ -4,7 +4,7 @@ ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 SHARED_LIB = libdheap.so
 
-TEST_FILES = test buffer_overflow buffer_underflow double_free child
+TEST_FILES = test buffer_overflow buffer_underflow double_free child execve
 
 CC = gcc
 CFLAGS = -shared -Bsymbolic -Wl,--no-as-needed -ldl -fPIC -Wall -Werror
