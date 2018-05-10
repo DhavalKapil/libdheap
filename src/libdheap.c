@@ -226,3 +226,51 @@ size_t malloc_usable_size (void *ptr) {
 
   return n->ch->requested_size;
 }
+
+int execve (const char *filename, char *const argv[], char *const envp[]) {
+  char *libdheap_path, *libdheap_env;
+  int len_env, i, libdheap_path_len;
+  char **new_envp;
+
+  /**
+   * Initialization
+   */
+  if (!libdheap_initialized) {
+    initialize();
+  }
+
+  display_log(libdheap_log, "execve(%s,...)", filename);
+  if (envp == 0) {
+    len_env = 0;
+  } else {
+    for (len_env = 0;envp[len_env]!=0;len_env++);
+  }
+
+  new_envp = (char **)malloc(sizeof(char *)*(len_env+2));
+  if (!new_envp) {
+    display_log(libdheap_log, "Unable to allocate memory for new_envp");
+    exit(1);
+  }
+
+  libdheap_path = getenv("LD_PRELOAD");
+  libdheap_path_len = strlen(libdheap_path);
+  if (!libdheap_path) {
+    display_log(libdheap_log, "No LD_PRELOAD environment variable present");
+    exit(1);
+  }
+
+  libdheap_env = malloc(strlen("LD_PRELOAD=") + libdheap_path_len + 1);
+  if (!libdheap_env) {
+    display_log(libdheap_log, "Unable to allocate memory for libdheap_env\n");
+    exit(1);
+  }
+
+  sprintf(libdheap_env, "LD_PRELOAD=%s", libdheap_path);
+  new_envp[0] = libdheap_env;
+  for (i=0;i<len_env;i++) {
+    new_envp[i+1] = envp[i];
+  }
+  new_envp[len_env + 1] = 0;
+
+  return libc_execve(filename, argv, new_envp);
+}
