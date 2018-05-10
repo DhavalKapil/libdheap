@@ -11,3 +11,4 @@ test
 buffer_overflow
 buffer_underflow
 double_free
+child
